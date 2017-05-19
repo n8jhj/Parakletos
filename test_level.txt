@@ -1,0 +1,21 @@
+[level]
+map = ..........
+      .#####.##.
+      .#...#..#.
+      .#...####.
+      .##.##....
+      ..........
+
+[.]
+name = ground
+img = ground_square.png
+img_vis = ground_square_bright.png
+moveable = true
+seeable = true
+
+[#]
+name = wall
+img = wall_square.png
+img_vis = wall_square_bright.png
+moveable = false
+seeable = false
