@@ -12,13 +12,13 @@ class Board(object):
         self.layoutFile = layoutFile # file containing map information
         self.tiles = [] # list of Tiles indexed by grid location
         self.chars = [] # list of Charactors
-        self.newRects = [] # list of Rects to update
         self.width = 0
         self.height = 0
         self.xStart = 25
         self.yStart = 25
         self.tw = 40 # tile width (pixels)
         self.th = 40 # tile height (pixels)
+        self.changed = True # whether self needs to be redrawn
         self.setup()
 
     def setup(self):
@@ -51,34 +51,18 @@ class Board(object):
                                                   name, img, imgVis, mvbl, sebl)
 
     def draw(self):
-        # loop through all Tiles, Charactors and draw them
-        self.surf.fill((0,0,0))
-        for i in range(self.height):
-            for j in range(self.width):
-                tile = self.tiles[i*self.width+j]
-                tile.draw()
-        for i in range(len(self.chars)):
-            self.chars[i].draw()
-        self.updateRects()
-
-    def updateRects(self):
-        surfSize = self.surf.get_size()
-        xmin = surfSize[0]
-        xmax = 0
-        ymin = surfSize[1]
-        ymax = 0
-        for i in range(len(self.newRects)):
-            xmin = min(xmin, self.newRects[i].left)
-            xmax = max(xmax, self.newRects[i].right)
-            ymin = min(ymin, self.newRects[i].top)
-            ymax = max(ymax, self.newRects[i].bottom)
-        self.newRects = [] # reset updates
-        updateRect = pygame.Rect(xmin, ymin, xmax-xmin, ymax-ymin)
-        print updateRect
-        pygame.display.update(updateRect)
-
-    def addToNewRects(self, rect):
-        self.newRects.append(rect)
+        if self.changed:
+            rect = pygame.Rect(self.xStart, self.yStart, \
+                               self.width*self.tw, self.height*self.th)
+            # loop through all Tiles, Charactors and draw them
+            for i in range(self.height):
+                for j in range(self.width):
+                    tile = self.tiles[i*self.width+j]
+                    tile.draw()
+            for i in range(len(self.chars)):
+                self.chars[i].draw()
+            pygame.display.update(rect)
+            self.changed = False
 
     def getTile(self, x, y):
         # Convert from bottom-left-oriented to top-left-oriented coordinates

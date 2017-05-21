@@ -35,7 +35,6 @@ class Charactor(Piece):
         y = rect.y + 2
         drawImg = transform.rotate(self.img, self.dir)
         self.surf.blit(drawImg, (x,y))
-        self.holder.board.addToNewRects(rect)
 ##        # draw LOS lines
 ##        lx1, ly1 = 0, 0
 ##        lx2, ly2 = 500, 500
@@ -46,6 +45,9 @@ class Charactor(Piece):
 ##        h = abs(ly2-ly1)
 ##        rect = Rect(x, y, w, h)
 ##        self.holder.board.addToNewRects(rect)
+
+    def updateBoard(self):
+        self.holder.board.changed = True
 
     def getNumLOSTiles(self):
         visCount = 0
@@ -92,7 +94,7 @@ class Charactor(Piece):
                     t.currImg = t.imgVis
                 else:
                     t.currImg = t.img
-                t.changed = True
+        self.updateBoard()
 
     def move(self, direction):
         tileTo = self.getTile((direction,1)) # get Tile to be moved to
@@ -100,8 +102,7 @@ class Charactor(Piece):
             self.updatePastLocs()
             self.holder.piece = None
             tileTo.piece = self
-            self.holder.changed = True # Tiles from...
-            tileTo.changed = True # ...and to should be redrawn
+            self.updateBoard() # board should be redrawn
             self.holder = tileTo
             self.paintLOS(0)
             self.updateLOS()
@@ -110,7 +111,7 @@ class Charactor(Piece):
     def turn(self, direction):
         dirDict = {'left':90, 'right':-90} # direction dictionary definition
         self.dir = (self.dir + dirDict[direction]) % 360
-        self.holder.changed = True # current Tile should be redrawn
+        self.updateBoard() # board should be redrawn
         self.paintLOS(0)
         self.updateLOS()
         self.paintLOS(1)

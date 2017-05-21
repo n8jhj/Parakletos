@@ -18,7 +18,6 @@ class Tile(object):
         self.moveable = moveable # whether Charactors can move here
         self.seeable = seeable # whether Charactors can see past here
         self.piece = None # Piece self contains
-        self.changed = True # whether self needs to be redrawn
 
     def __repr__(self):
         return str(self.loc)
@@ -33,10 +32,7 @@ class Tile(object):
 
     # Draw self at pixel locations determined by rect
     def draw(self):
-        if self.changed:
-            self.surf.blit(self.currImg, (self.rect.x, self.rect.y))
-            self.board.addToNewRects(self.rect)
-            self.changed = False
+        self.surf.blit(self.currImg, (self.rect.x, self.rect.y))
 
     def getTileAdjacent(self, (dx,dy)):
         # Gets the tile dx units away in x, dy units away in y
