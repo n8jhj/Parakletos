@@ -30,10 +30,6 @@ class Tile(object):
                     self.board.tw, self.board.th)
         return rect
 
-    # Draw self at pixel locations determined by rect
-    def draw(self):
-        self.surf.blit(self.currImg, (self.rect.x, self.rect.y))
-
     def getTileAdjacent(self, (dx,dy)):
         # Gets the tile dx units away in x, dy units away in y
         adjx = self.loc[0]+dx
@@ -42,6 +38,10 @@ class Tile(object):
            and adjy >= 0 and adjy <= self.board.height-1:
             return self.board.getTile(adjx, adjy)
         return None
+
+    # Draw self at pixel locations determined by rect
+    def draw(self):
+        self.surf.blit(self.currImg, (self.rect.x, self.rect.y))
 
     def addChar(self, char):
         assert self.piece == None, 'There\'s already a Piece on this Tile!'

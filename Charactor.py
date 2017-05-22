@@ -28,6 +28,7 @@ class Charactor(Piece):
         self.active = 1 # whether self is still active in the present turn
 
     # In future, this should account for which Player's turn it is
+    # (Don't draw if on the opposing Player's team and out of LOS)
     def draw(self):
         # draw icon
         rect = self.holder.rect
@@ -35,16 +36,15 @@ class Charactor(Piece):
         y = rect.y + 2
         drawImg = transform.rotate(self.img, self.dir)
         self.surf.blit(drawImg, (x,y))
-##        # draw LOS lines
-##        lx1, ly1 = 0, 0
-##        lx2, ly2 = 500, 500
-##        pygame.draw.line(self.surf, (255,0,0), (lx1,ly1), (lx2,ly2), 2)
-##        x = min(lx1,lx2)
-##        y = min(ly1,ly2)
-##        w = abs(lx2-lx1)
-##        h = abs(ly2-ly1)
-##        rect = Rect(x, y, w, h)
-##        self.holder.board.addToNewRects(rect)
+        # draw LOS lines
+        lx1, ly1 = 0, 0
+        lx2, ly2 = 500, 500
+        pygame.draw.line(self.surf, (255,0,0), (lx1,ly1), (lx2,ly2), 2)
+        x = min(lx1,lx2)
+        y = min(ly1,ly2)
+        w = abs(lx2-lx1)
+        h = abs(ly2-ly1)
+        rect = Rect(x, y, w, h)
 
     def updateBoard(self):
         self.holder.board.changed = True
@@ -56,8 +56,13 @@ class Charactor(Piece):
             visCount += el
         return (3*self.vis) + (2*visCount) + 1
 
+    def clearWallInLOS(self):
+        self.wallInLOS = [None] * len(self.LOS)
+
     # updates self.LOS by overwriting it
+    # order is from middle to outsides (i), near to far (j)
     def updateLOS(self):
+        self.clearWallInLOS()
         currLoc = self.getLoc()
         count = 0
         wallCount = 0
